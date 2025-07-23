@@ -141,10 +141,9 @@
 
             newRow.insertCell(0).textContent = row.id
             newRow.insertCell(1).textContent = row.created_at
-            newRow.insertCell(2).textContent = row.username
-            newRow.insertCell(3).textContent = row.processed_text // Changed to processed_text
-            newRow.insertCell(4).textContent = row.jumlah_mention
-            newRow.insertCell(5).textContent = row.mentions
+            newRow.insertCell(2).textContent = row.processed_text
+            newRow.insertCell(3).textContent = row.jumlah_mention
+            newRow.insertCell(4).textContent = row.mentions
           })
 
           currentPage = data.page
