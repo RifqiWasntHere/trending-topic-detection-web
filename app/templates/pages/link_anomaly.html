@@ -1,0 +1,1831 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Link Anomaly</h1>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Link Anomaly Detection</h6>
+        </div>
+        <div class="card-body">
+            <button class="btn btn-primary mb-3" id="startProcess">Mulai Proses</button>
+
+            <div id="loading" style="display: none;">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <p class="text-center mt-2">Sedang memuat data...</p>
+
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Limit Twitt</h6>
+                </div>
+                <center>
+                    <img src="../../static/img/proses_link_anomaly.png" alt="" width="200" height="400">
+                </center>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="limitTwittTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Waktu</th>
+                                    <th>Username</th>
+                                    <th>Isi Tweet</th>
+                                    <th>Mentions</th>
+                                    <th>Jumlah Mention</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="limitTwittEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="limitTwittPagination" class="d-flex align-items-center">
+                            <button id="limitTwittPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="limitTwittPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="limitTwittNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Probabilitas Mention Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Probabilitas Mention</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_menghitung_probabilitas_mention.png" alt="">
+                        <table class="table table-bordered" id="mentionTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Tweet ke - </th>
+                                    <th>Probabilitas Mention</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="mentionEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="mentionPagination" class="d-flex align-items-center">
+                            <button id="mentionPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="mentionPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="mentionNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Probabilitas User Table -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Probabilitas User</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_menghitung_probabilitas_user.png" alt="">
+                        <table class="table table-bordered" id="userTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Mentions</th>
+                                    <th>Probabilitas User</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="userEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="userPagination" class="d-flex align-items-center">
+                            <button id="userPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="userPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="userNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Probabilitas User Table -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Skor Anomaly</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_menghitung_skor_link_anomaly.png" alt="">
+                        <table class="table table-bordered" id="skorAnomalyTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Tweet ke - </th>
+                                    <th>Skor Anomaly</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="skorAnomalyEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="skorAnomalyPagination" class="d-flex align-items-center">
+                            <button id="skorAnomalyPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="skorAnomalyPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="skorAnomalyNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil Agregasi -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Agregasi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_menghitung_agregasi_skor_link_anomaly.png" alt="">
+                        <table class="table table-bordered" id="hasilAgregasiTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Jumlah Mention Agregasi</th>
+                                    <th>Nilai Agregasi</th>
+                                    <th>Waktu Awal</th>
+                                    <th>Waktu Akhir</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="hasilAgregasiEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="hasilAgregasiPagination" class="d-flex align-items-center">
+                            <button id="hasilAgregasiPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="hasilAgregasiPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="hasilAgregasiNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Tabel Hasil At -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan
+                        <math>
+                            <msub>
+                                <mi>Â</mi>
+                                <mn>t</mn>
+                            </msub>
+                        </math>
+
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_at.png" alt="">
+                        <table class="table table-bordered" id="AtTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th> Nilai<math>
+                                            <msub>
+                                                <mi>c̃</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                    <th> Nilai<math>
+                                            <msub>
+                                                <mi>Ṽ</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                    <th> Nilai<math>
+                                            <msub>
+                                                <mi>M</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="AtFinalValue" class="mt-3 h2 font-weight-bold text-primary"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="AtEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="AtPagination" class="d-flex align-items-center">
+                            <button id="AtPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="AtPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="AtNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil taut t  -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan
+                        <math>
+                            <msub>
+                                <mi>τ</mi>
+                                <mn>t</mn>
+                            </msub>
+                        </math>
+
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_tau_t.png" alt="">
+                        <table class="table table-bordered" id="tautTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th> Nilai <math>
+                                            <msub>
+                                                <mi>e</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                    <th> Nilai <math>
+                                            <msub>
+                                                <mi>τ</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="tautFinalValue" class="mt-3 h2 font-weight-bold text-primary"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="tautEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="5">5</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="tautPagintaution" class="d-flex align-items-center">
+                            <button id="tautPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="tautPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="tautNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil s t  -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan
+                        <math>
+                            <msub>
+                                <mi>S</mi>
+                                <mn>t</mn>
+                            </msub>
+                        </math>
+
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_st.png" alt="">
+                        <table class="table table-bordered" id="stTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th> Nilai <math>
+                                            <msub>
+                                                <mi>S</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math> </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="stFinalValue" class="mt-3 h2 font-weight-bold text-primary"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="stEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="5">5</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="stPagination" class="d-flex align-items-center">
+                            <button id="stPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="stPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="stNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil s t  -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan
+                        <math>
+                            <msub>
+                                <mi>K</mi>
+                                <mi>t</mi>
+                            </msub>
+                            <mrow>
+                                <mo>(</mo>
+                                <msup>
+                                    <mi>x</mi>
+                                    <mrow>
+                                        <mi>t</mi>
+                                        <mo>-</mo>
+                                        <mn>1</mn>
+                                    </mrow>
+                                </msup>
+                                <mo>)</mo>
+                            </mrow>
+                        </math>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_kt.png" alt="">
+                        <table class="table table-bordered" id="ktTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th> Nilai
+                                        <math>
+                                            <msub>
+                                                <mi>d</mi>
+                                                <mn>t</mn>
+                                            </msub>
+                                        </math>
+                                    </th>
+                                    <th> Nilai
+                                        <math>
+                                            <msub>
+                                                <mi>K</mi>
+                                                <mi>t</mi>
+                                            </msub>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mrow>
+                                                        <mi>t</mi>
+                                                        <mo>-</mo>
+                                                        <mn>1</mn>
+                                                    </mrow>
+                                                </msup>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="ktFinalValue" class="mt-3 h2 font-weight-bold text-primary"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="ktEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="5">5</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="ktPagination" class="d-flex align-items-center">
+                            <button id="ktPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="ktPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="ktNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil first stage -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan First Learning</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_sdnml.png" alt="">
+                        <table class="table table-bordered" id="firstLearnTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <msub>
+                                                <mi>P</mi>
+                                                <mtext>SDNML</mtext>
+                                            </msub>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msub>
+                                                    <mi>x</mi>
+                                                    <mi>t</mi>
+                                                </msub>
+                                                <mo>|</mo>
+                                                <msup>
+                                                    <mi>x</mi>
+                                                    <mrow>
+                                                        <mo>(</mo>
+                                                        <mi>t</mi>
+                                                        <mo>-</mo>
+                                                        <mn>1</mn>
+                                                        <mo>)</mo>
+                                                    </mrow>
+                                                </msup>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math> </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="firstLearnEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="5">5</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="firstLearnPagination" class="d-flex align-items-center">
+                            <button id="firstLearnPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="firstLearnPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="firstLearnNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil first stage Scoring -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil First Scoring</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_first_scoring.png" alt="">
+                        <table class="table table-bordered" id="firstScoringTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <mtext>Score</mtext>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msub>
+                                                    <mi>x</mi>
+                                                    <mi>t</mi>
+                                                </msub>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="firstScoringEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="firstScoringPagination" class="d-flex align-items-center">
+                            <button id="firstScoringPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="firstScoringPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="firstScoringNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil Smoothing -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan Smoothing</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_smoothing.png" alt="">
+                        <table class="table table-bordered" id="firstSmoothingTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <msub>
+                                                <mi>y</mi>
+                                                <mi>t</mi>
+                                            </msub>
+                                        </math></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="firstSmoothingEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="firstSmoothingPagination" class="d-flex align-items-center">
+                            <button id="firstSmoothingPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="firstSmoothingPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="firstSmoothingNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil Second Stage Learning -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan Second Learning</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_qsdnml.png" alt="">
+                        <table class="table table-bordered" id="secondLearnTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <msub>
+                                                <mi>q</mi>
+                                                <mtext>SDNML</mtext>
+                                            </msub>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msub>
+                                                    <mi>y</mi>
+                                                    <mi>t</mi>
+                                                </msub>
+                                                <mo>|</mo>
+                                                <msup>
+                                                    <mi>y</mi>
+                                                    <mrow>
+                                                        <mo>(</mo>
+                                                        <mi>t</mi>
+                                                        <mo>-</mo>
+                                                        <mn>1</mn>
+                                                        <mo>)</mo>
+                                                    </mrow>
+                                                </msup>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math> </th>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="secondLearnEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="secondLearnPagination" class="d-flex align-items-center">
+                            <button id="secondLearnPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="secondLearnPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="secondLearnNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil Second Stage Smoothing -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan Second Scoring </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_second_scoring.png" alt="">
+                        <table class="table table-bordered" id="secondScoringTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <msub>
+                                                <mi>-log q</mi>
+                                                <mtext>SDNML</mtext>
+                                            </msub>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msub>
+                                                    <mi>y</mi>
+                                                    <mi>t</mi>
+                                                </msub>
+                                                <mo>|</mo>
+                                                <msup>
+                                                    <mi>y</mi>
+                                                    <mrow>
+                                                        <mo>(</mo>
+                                                        <mi>t</mi>
+                                                        <mo>-</mo>
+                                                        <mn>1</mn>
+                                                        <mo>)</mo>
+                                                    </mrow>
+                                                </msup>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math> </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="secondScoringEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="secondScoringPagination" class="d-flex align-items-center">
+                            <button id="secondScoringPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="secondScoringPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="secondScoringNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil Second Stage Smoothing -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan Second Smoothing </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_second_scoring.png" alt="">
+                        <table class="table table-bordered" id="secondSmoothingTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Diskrit</th>
+                                    <th>Nilai <math>
+                                            <mtext>Score</mtext>
+                                            <mrow>
+                                                <mo>(</mo>
+                                                <msub>
+                                                    <mi>t</mi>
+                                                </msub>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="secondSmoothingEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="secondSmoothingPagination" class="d-flex align-items-center">
+                            <button id="secondSmoothingPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="secondSmoothingPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="secondSmoothingNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabel Hasil Second Stage Smoothing -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan Bins </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <img src="../../static/img/rumus_bins.png" alt="">
+                        <table class="table table-bordered" id="binsTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sell Bins </th>
+                                    <th>Nilai bins <math>
+                                            <mrow>
+                                                <mi>η</mi>
+                                                <mo>(</mo>
+                                                <mi>j</mi>
+                                                <mo>)</mo>
+                                            </mrow>
+                                        </math></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span>Show</span>
+                            <select id="binsEntriesPerPage"
+                                class="custom-select custom-select-sm form-control form-control-sm mx-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                        <div id="binsPagination" class="d-flex align-items-center">
+                            <button id="binsPrevPage" class="btn btn-sm btn-secondary mx-1">Previous</button>
+                            <span id="binsPageInfo" class="mx-2">Page 1 of 1</span>
+                            <button id="binsNextPage" class="btn btn-sm btn-secondary mx-1">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="detectionResult" class="card mb-4" style="display: none;">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Hasil Deteksi Anomali</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Tambahkan kontainer untuk topik yang sedang tren -->
+                    <div id="trendingTopicsContainer"></div>
+                    <!-- Tambahkan kontainer untuk hasil agregasi -->
+                    <div id="hasilAgregasiContainer"></div>
+                    <!-- Tambahkan canvas untuk grafik diskrit -->
+                    <canvas id="diskritChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    let isProcessing = false;
+    // Data untuk probabilitas user
+    let userCurrentData = [];
+    let userCurrentPage = 1;
+    let userEntriesPerPage = 5;
+    // Data untuk probabilitas mention
+    let mentionCurrentData = [];
+    let mentionCurrentPage = 1;
+    let mentionEntriesPerPage = 5;
+    // Data skor anomaly
+    let skorAnomalyCurrentData = [];
+    let skorAnomalyCurrentPage = 1;
+    let skorAnomalyEntriesPerPage = 5;
+
+    let hasilAgregasiCurrentPage = 1;
+    let hasilAgregasiEntriesPerPage = 5;
+    let hasilAgregasiCurrentData = [];
+
+    let firstLearnCurrentData = [];
+    let firstLearnCurrentPage = 1;
+    let firstLearnEntriesPerPage = 5;
+
+    let firstScoringCurrentData = [];
+    let firstScoringCurrentPage = 1;
+    let firstScoringEntriesPerPage = 5;
+
+    let firstSmoothingCurrentData = [];
+    let firstSmoothingCurrentPage = 1;
+    let firstSmoothingEntriesPerPage = 5;
+
+    let secondLearnCurrentData = [];
+    let secondLearnCurrentPage = 1;
+    let secondLearnEntriesPerPage = 5;
+
+    let secondScoringCurrentData = [];
+    let secondScoringCurrentPage = 1;
+    let secondScoringEntriesPerPage = 5;
+
+    let mentionsCurrentData = [];
+    let limitTwittCurrentData = [];
+    let limitTwittCurrentPage = 1;
+    let limitTwittEntriesPerPage = 5;
+
+    let AtCurrentData = [];
+    let AtCurrentPage = 1;
+    let AtEntriesPerPage = 5;
+    let ctCurrentData = [];
+    let mtCurrentData = [];
+    let atCurrentData = [];
+
+    let tautCurrentData = [];
+    let tautCurrentPage = 1;
+    let tautEntriesPerPage = 5;
+    let etCurrentData = [];
+
+    let ktCurrentData = [];
+    let ktCurrentPage = 1;
+    let ktEntriesPerPage = 5;
+    let dtCurrentData = [];
+
+    let stCurrentData = [];
+    let stCurrentPage = 1;
+    let stEntriesPerPage = 5;
+
+    let secondSmoothingCurrentData = [];
+    let secondSmoothingCurrentPage = 1;
+    let secondSmoothingEntriesPerPage = 5;
+
+    let binsCurrentData = [];
+    let binsCurrentPage = 1;
+    let binsEntriesPerPage = 5;
+
+    document.getElementById("stEntriesPerPage").addEventListener("change", (e) => {
+        stEntriesPerPage = parseInt(e.target.value);
+        renderSt();
+    });
+
+    document.getElementById("stPrevPage").addEventListener("click", () => {
+        if (stCurrentPage > 1) {
+            stCurrentPage--;
+            renderSt();
+        }
+    });
+
+    document.getElementById("stNextPage").addEventListener("click", () => {
+        if (stCurrentPage < Math.ceil(stCurrentData.length / stEntriesPerPage)) {
+            stCurrentPage++;
+            renderSt();
+        }
+    });
+
+    document.getElementById("ktEntriesPerPage").addEventListener("change", (e) => {
+        ktEntriesPerPage = parseInt(e.target.value);
+        renderKt();
+    });
+
+    document.getElementById("ktPrevPage").addEventListener("click", () => {
+        if (ktCurrentPage > 1) {
+            ktCurrentPage--;
+            renderKt();
+        }
+    });
+
+    document.getElementById("ktNextPage").addEventListener("click", () => {
+        if (ktCurrentPage < Math.ceil(ktCurrentData.length / ktEntriesPerPage)) {
+            ktCurrentPage++;
+            renderKt();
+        }
+    });
+
+
+    document.getElementById("tautEntriesPerPage").addEventListener("change", (e) => {
+        tautEntriesPerPage = parseInt(e.target.value);
+        renderTaut();
+    });
+
+    document.getElementById("tautPrevPage").addEventListener("click", () => {
+        if (tautCurrentPage > 1) {
+            tautCurrentPage--;
+            renderTaut();
+        }
+    });
+
+    document.getElementById("tautNextPage").addEventListener("click", () => {
+        if (tautCurrentPage < Math.ceil(AtCurrentData.length / tautEntriesPerPage)) {
+            tautCurrentPage++;
+            renderTaut();
+        }
+    });
+    document.getElementById("tautEntriesPerPage").addEventListener("change", (e) => {
+        tautEntriesPerPage = parseInt(e.target.value);
+        renderAtTable();
+    });
+
+    document.getElementById("tautPrevPage").addEventListener("click", () => {
+        if (AtCurrentPage > 1) {
+            AtCurrentPage--;
+            renderAtTable();
+        }
+    });
+    document.getElementById("AtEntriesPerPage").addEventListener("change", (e) => {
+        AtEntriesPerPage = parseInt(e.target.value);
+        renderAtTable();
+    });
+    document.getElementById("AtPrevPage").addEventListener("click", () => {
+        if (AtCurrentPage > 1) {
+            AtCurrentPage--;
+            renderAtTable();
+        }
+    });
+
+    document.getElementById("AtNextPage").addEventListener("click", () => {
+        if (AtCurrentPage < Math.ceil(AtCurrentData.length / AtEntriesPerPage)) {
+            AtCurrentPage++;
+            renderAtTable();
+        }
+    });
+
+    document.getElementById("limitTwittEntriesPerPage").addEventListener("change", (e) => {
+        limitTwittEntriesPerPage = parseInt(e.target.value);
+        renderLimitTwittTable();
+    });
+
+    document.getElementById("limitTwittPrevPage").addEventListener("click", () => {
+        if (limitTwittCurrentPage > 1) {
+            limitTwittCurrentPage--;
+            renderLimitTwittTable();
+        }
+    });
+
+    document.getElementById("limitTwittNextPage").addEventListener("click", () => {
+        if (limitTwittCurrentPage < Math.ceil(limitTwittCurrentData.length / limitTwittEntriesPerPage)) {
+            limitTwittCurrentPage++;
+            renderLimitTwittTable();
+        }
+    });
+
+    document.getElementById("userEntriesPerPage").addEventListener("change", (e) => {
+        userEntriesPerPage = parseInt(e.target.value);
+        renderUserTable();
+    });
+
+    document.getElementById("userPrevPage").addEventListener("click", () => {
+        if (userCurrentPage > 1) {
+            userCurrentPage--;
+            renderUserTable();
+        }
+    });
+
+    document.getElementById("userNextPage").addEventListener("click", () => {
+        if (userCurrentPage < Math.ceil(userCurrentData.length / userEntriesPerPage)) {
+            userCurrentPage++;
+            renderUserTable();
+        }
+    });
+
+    document.getElementById("mentionEntriesPerPage").addEventListener("change", (e) => {
+        mentionEntriesPerPage = parseInt(e.target.value);
+        renderMentionTable();
+    });
+
+    document.getElementById("mentionPrevPage").addEventListener("click", () => {
+        if (mentionCurrentPage > 1) {
+            mentionCurrentPage--;
+            renderMentionTable();
+        }
+    });
+
+    document.getElementById("mentionNextPage").addEventListener("click", () => {
+        if (mentionCurrentPage < Math.ceil(mentionCurrentData.length / mentionEntriesPerPage)) {
+            mentionCurrentPage++;
+            renderMentionTable();
+        }
+    });
+
+    document.getElementById("skorAnomalyEntriesPerPage").addEventListener("change", (e) => {
+        skorAnomalyEntriesPerPage = parseInt(e.target.value);
+        renderSkorAnomalyTable();
+    });
+
+    document.getElementById("skorAnomalyPrevPage").addEventListener("click", () => {
+        if (skorAnomalyCurrentPage > 1) {
+            skorAnomalyCurrentPage--;
+            renderSkorAnomalyTable();
+        }
+    });
+
+    document.getElementById("skorAnomalyNextPage").addEventListener("click", () => {
+        if (skorAnomalyCurrentPage < Math.ceil(skorAnomalyCurrentData.length / skorAnomalyEntriesPerPage)) {
+            skorAnomalyCurrentPage++;
+            renderSkorAnomalyTable();
+        }
+    });
+
+    // Event Listeners untuk Hasil Agregasi
+    document.getElementById("hasilAgregasiEntriesPerPage").addEventListener("change", (e) => {
+        hasilAgregasiEntriesPerPage = parseInt(e.target.value);
+        renderHasilAgregasiTable();
+    });
+
+    document.getElementById("hasilAgregasiPrevPage").addEventListener("click", () => {
+        if (hasilAgregasiCurrentPage > 1) {
+            hasilAgregasiCurrentPage--;
+            renderHasilAgregasiTable();
+        }
+    });
+
+    document.getElementById("hasilAgregasiNextPage").addEventListener("click", () => {
+        if (hasilAgregasiCurrentPage < Math.ceil(hasilAgregasiCurrentData.length / hasilAgregasiEntriesPerPage)) {
+            hasilAgregasiCurrentPage++;
+            renderHasilAgregasiTable();
+        }
+    });
+
+    // Event Listeners untuk First Learn
+    document.getElementById("firstLearnEntriesPerPage").addEventListener("change", (e) => {
+        firstLearnEntriesPerPage = parseInt(e.target.value);
+        firstLearnCurrentPage = 1; // Reset ke halaman pertama saat mengubah entries per page
+        renderFirstLearn();
+    });
+
+    document.getElementById("firstLearnNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(firstLearnCurrentData[0].length / firstLearnEntriesPerPage);
+        if (firstLearnCurrentPage < totalPages) {
+            firstLearnCurrentPage++;
+            renderFirstLearn();
+        }
+    });
+
+    document.getElementById("firstLearnPrevPage").addEventListener("click", () => {
+        if (firstLearnCurrentPage > 1) {
+            firstLearnCurrentPage--;
+            renderFirstLearn();
+        }
+    });
+
+    // Event Listeners untuk First Scoring
+    document.getElementById("firstScoringEntriesPerPage").addEventListener("change", (e) => {
+        firstScoringEntriesPerPage = parseInt(e.target.value);
+        firstScoringCurrentPage = 1;
+        renderfirstScoring();
+    });
+
+    document.getElementById("firstScoringNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(firstScoringCurrentData[0].length / firstScoringEntriesPerPage);
+        if (firstScoringCurrentPage < totalPages) {
+            firstScoringCurrentPage++;
+            renderfirstScoring();
+        }
+    });
+
+    document.getElementById("firstScoringPrevPage").addEventListener("click", () => {
+        if (firstScoringCurrentPage > 1) {
+            firstScoringCurrentPage--;
+            renderfirstScoring();
+        }
+    });
+
+
+    document.getElementById("secondLearnEntriesPerPage").addEventListener("change", (e) => {
+        secondLearnEntriesPerPage = parseInt(e.target.value);
+        secondLearnCurrentPage = 1;
+        rendersecondLearn();
+    });
+
+    document.getElementById("secondLearnNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(secondLearnCurrentData[0].length / secondLearnEntriesPerPage);
+        if (secondLearnCurrentPage < totalPages) {
+            secondLearnCurrentPage++;
+            rendersecondLearn();
+        }
+    });
+
+    document.getElementById("secondLearnPrevPage").addEventListener("click", () => {
+        if (secondLearnCurrentPage > 1) {
+            secondLearnCurrentPage--;
+            rendersecondLearn();
+        }
+    });
+
+    document.getElementById("secondScoringEntriesPerPage").addEventListener("change", (e) => {
+        secondScoringEntriesPerPage = parseInt(e.target.value);
+        secondScoringCurrentPage = 1;
+        rendersecondScoring();
+    });
+
+    document.getElementById("secondScoringNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(secondScoringCurrentData[0].length / secondScoringEntriesPerPage);
+        if (secondScoringCurrentPage < totalPages) {
+            secondScoringCurrentPage++;
+            rendersecondScoring();
+        }
+    });
+
+    document.getElementById("secondScoringPrevPage").addEventListener("click", () => {
+        if (secondScoringCurrentPage > 1) {
+            secondScoringCurrentPage--;
+            rendersecondScoring();
+        }
+    });
+    document.getElementById("secondSmoothingEntriesPerPage").addEventListener("change", (e) => {
+        secondSmoothingEntriesPerPage = parseInt(e.target.value);
+        secondSmoothingCurrentPage = 1;
+        rendersecondSmoothing();
+    });
+
+    document.getElementById("secondSmoothingNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(secondSmoothingCurrentData[0].length / secondSmoothingEntriesPerPage);
+        if (secondSmoothingCurrentPage < totalPages) {
+            secondSmoothingCurrentPage++;
+            rendersecondSmoothing();
+        }
+    });
+
+    document.getElementById("secondSmoothingPrevPage").addEventListener("click", () => {
+        if (secondSmoothingCurrentPage > 1) {
+            secondSmoothingCurrentPage--;
+            rendersecondSmoothing();
+        }
+    });
+    document.getElementById("binsEntriesPerPage").addEventListener("change", (e) => {
+        binsEntriesPerPage = parseInt(e.target.value);
+        binsCurrentPage = 1;
+        renderbins();
+    });
+
+    document.getElementById("binsNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(binsCurrentData[0].length / binsEntriesPerPage);
+        if (binsCurrentPage < totalPages) {
+            binsCurrentPage++;
+            renderbins();
+        }
+    });
+
+    document.getElementById("binsPrevPage").addEventListener("click", () => {
+        if (binsCurrentPage > 1) {
+            binsCurrentPage--;
+            renderbins();
+        }
+    });
+
+    document.getElementById("startProcess").addEventListener("click", async () => {
+        if (isProcessing) return;
+
+        const loading = document.getElementById("loading");
+        const button = document.getElementById("startProcess");
+
+        try {
+            isProcessing = true;
+            button.disabled = true;
+            loading.style.display = "block";
+
+            const response = await fetch("/api/run_link_anomaly", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                userCurrentData = data.data.probabilitas_user;
+                mentionCurrentData = data.data.probabilitas_mention;
+                skorAnomalyCurrentData = data.data.skor_anomaly;
+                hasilAgregasiCurrentData = data.data.hasil_agregasi;
+                firstLearnCurrentData = data.data.first_stage_learning;
+                firstScoringCurrentData = data.data.first_stage_scoring;
+                firstSmoothingCurrentData = data.data.first_stage_smoothing;
+                secondLearnCurrentData = data.data.second_stage_learning;
+                secondScoringCurrentData = data.data.second_stage_scoring;
+                AtCurrentData = data.data.rvt;
+                ctCurrentData = data.data.rct;
+                atCurrentData = data.data.rat;
+                mtCurrentData = data.data.rmt;
+                tautCurrentData = data.data.taut;
+                etCurrentData = data.data.ret;
+                ktCurrentData = data.data.rkt;
+                dtCurrentData = data.data.rdt;
+                stCurrentData = data.data.rst;
+                secondSmoothingCurrentData = data.data.second_stage_smoothing;
+                binsCurrentData = data.data.rbins;
+
+                mentionsCurrentData = data.data.mentions;
+                limitTwittCurrentData = data.data.limit_twitt;
+
+                userCurrentPage = 1;
+                mentionCurrentPage = 1;
+                skorAnomalyCurrentPage = 1;
+                tautCurrentPage = 1;
+                hasilAgregasiCurrentPage = 1;
+                firstLearnCurrentPage = 1;
+                firstScoringCurrentPage = 1;
+                mentionsCurrentPage = 1;
+                firstSmoothingCurrentPage = 1;
+                secondLearnCurrentPage = 1;
+                secondScoringCurrentPage = 1;
+                limitTwittCurrentPage = 1;
+                AtCurrentPage = 1;
+                ktCurrentPage = 1;
+                stCurrentPage = 1;
+                secondSmoothingCurrentPage = 1;
+                binsCurrentPage = 1;
+
+                renderUserTable();
+                renderTaut();
+                renderMentionTable();
+                renderSkorAnomalyTable();
+                renderLimitTwittTable();
+                renderHasilAgregasiTable();
+                renderFirstLearn();
+                renderfirstScoring();
+                renderFirstSmoothing();
+                rendersecondLearn();
+                rendersecondScoring();
+                renderAtTable();
+                renderKt();
+                renderSt();
+                rendersecondSmoothing();
+                renderbins();
+                document.getElementById("detectionResult").style.display = "block";
+
+                if (data.data.trending_topics) {
+                    const periods = data.data.trending_topics.periods;
+
+                    // Filter periods to only include those with relevant diskrit
+                    const filteredPeriods = periods.map(period => {
+                        const historicalPeriods = period.historical_periods.filter(hp =>
+                            [18, 19, 20, 22, 23, 24].includes(hp.diskrit)
+                        );
+                        return { ...period, historical_periods: historicalPeriods };
+                    });
+
+                    displayTrendingTopics(filteredPeriods);
+                }
+
+                // Filter and display 'hasil_agregasi' data for trending diskrit
+                const hasilAgregasiData = data.data.hasil_agregasi.filter(item =>
+                    [18, 19, 20, 22, 23, 24].includes(item.diskrit)
+                );
+                displayHasilAgregasi(hasilAgregasiData);
+
+                // Display chart for all diskrit
+                displayDiskritChart(data.data.hasil_agregasi);
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan: " + error.message);
+        } finally {
+            loading.style.display = "none";
+            button.disabled = false;
+            isProcessing = false;
+        }
+    });
+    function displayHasilAgregasi(hasilAgregasiData) {
+        const hasilAgregasiContainer = document.getElementById("hasilAgregasiContainer");
+        hasilAgregasiContainer.innerHTML = ''; // Clear previous data
+    }
+
+    function displayDiskritChart(hasilAgregasiData) {
+        const ctx = document.getElementById('diskritChart').getContext('2d');
+        const diskritLabels = hasilAgregasiData.map(item => item.diskrit);
+        const mentionCounts = hasilAgregasiData.map(item => item.jumlah_mention_agregasi);
+
+        // Format waktu menjadi "3" dan "Oktober" (dua baris)
+        const waktuAwalLabels = hasilAgregasiData.map(item => {
+            const date = new Date(item.waktu_awal);
+            const day = date.getDate(); // Hari (3)
+            const month = date.toLocaleDateString('id-ID', { month: 'long' }); // Bulan (Oktober)
+            return { day, month };
+        });
+
+        const trendingDiskrit = [18, 19, 20, 22, 23, 24];
+
+        const backgroundColors = diskritLabels.map(diskrit =>
+            trendingDiskrit.includes(diskrit) ? 'rgba(255, 99, 132, 0.2)' : 'rgba(54, 162, 235, 0.2)'
+        );
+
+        const borderColors = diskritLabels.map(diskrit =>
+            trendingDiskrit.includes(diskrit) ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)'
+        );
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: diskritLabels,
+                datasets: [{
+                    label: 'Jumlah Mention Agregasi',
+                    data: mentionCounts,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                    x: {
+                        ticks: {
+                            callback: function (value, index, values) {
+                                const { day, month } = waktuAwalLabels[index];
+                                return `${day}\n${month}`; // Label dua baris: Hari di atas, Bulan di bawah
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Grafik Jumlah Mention Agregasi per Diskrit'
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+    function displayTrendingTopics(periods) {
+        const trendingContainer = document.getElementById("trendingTopicsContainer");
+        trendingContainer.innerHTML = ''; // Clear previous data
+
+        periods.forEach(period => {
+            const periodElement = document.createElement("div");
+            periodElement.classList.add("period");
+
+            const historicalPeriodsElement = document.createElement("div");
+            historicalPeriodsElement.classList.add("historical-periods");
+            historicalPeriodsElement.innerHTML = `<h4>Periode Trending</h4>`;
+
+            period.historical_periods.forEach(hp => {
+                const hpElement = document.createElement("p");
+                hpElement.innerHTML = `Diskrit: ${hp.diskrit}, Waktu Awal: ${hp.waktu_awal}, Waktu Akhir: ${hp.waktu_akhir}`;
+                historicalPeriodsElement.appendChild(hpElement);
+            });
+            periodElement.appendChild(historicalPeriodsElement);
+            trendingContainer.appendChild(periodElement);
+        });
+    }
+
+    function renderSt() {
+        const startIndex = (stCurrentPage - 1) * stEntriesPerPage;
+        const endIndex = startIndex + stEntriesPerPage;
+        const stData = stCurrentData[0];
+        const pageData = stData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#stTable tbody");
+
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${stData[index]}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(stCurrentData.length / stEntriesPerPage);
+        document.getElementById("stPageInfo").textContent = `Page ${stCurrentPage} of ${totalPages}`;
+        document.getElementById("stPrevPage").disabled = stCurrentPage === 1;
+        document.getElementById("stNextPage").disabled = stCurrentPage === totalPages;
+    }
+
+    function renderKt() {
+        const startIndex = (ktCurrentPage - 1) * ktEntriesPerPage;
+        const endIndex = startIndex + ktEntriesPerPage;
+        const dtData = dtCurrentData[0];
+        const ktData = ktCurrentData[0];
+        const pageData = ktData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#ktTable tbody");
+
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${dtData[index]}</td>
+            <td>${value}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(ktCurrentData.length / ktEntriesPerPage);
+        document.getElementById("ktPageInfo").textContent = `Page ${ktCurrentPage} of ${totalPages}`;
+        document.getElementById("ktPrevPage").disabled = ktCurrentPage === 1;
+        document.getElementById("ktNextPage").disabled = ktCurrentPage === totalPages;
+    }
+
+    function renderTaut() {
+
+        const startIndex = (tautCurrentPage - 1) * tautEntriesPerPage;
+        const endIndex = startIndex + tautEntriesPerPage;
+        const etData = etCurrentData[0];
+        const tautData = tautCurrentData[0];
+        const pageData = tautData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#tautTable tbody");
+
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${etData[index]}</td>
+            <td>${value}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(tautCurrentData.length / tautEntriesPerPage);
+        document.getElementById("tautPageInfo").textContent = `Page ${tautCurrentPage} of ${totalPages}`;
+        document.getElementById("tautPrevPage").disabled = tautCurrentPage === 1;
+        document.getElementById("tautNextPage").disabled = tautCurrentPage === totalPages;
+    }
+    function renderAtTable() {
+        if (!AtCurrentData || !Array.isArray(AtCurrentData)) {
+            console.warn('Data RVT tidak valid atau kosong');
+            return;
+        }
+
+        const startIndex = (AtCurrentPage - 1) * AtEntriesPerPage;
+        const endIndex = startIndex + AtEntriesPerPage;
+        const ctData = ctCurrentData.slice(startIndex, endIndex);
+        const mtData = mtCurrentData.slice(startIndex, endIndex);
+        const atData = atCurrentData[0]
+        const pageData = AtCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#AtTable tbody");
+        if (!tbody) {
+            console.error('Table body tidak ditemukan');
+            return;
+        }
+
+        tbody.innerHTML = pageData.map((matrix, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${ctData[index]}</td>
+            <td>${JSON.stringify(matrix)}</td>
+            <td>${mtData[index]}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(AtCurrentData.length / AtEntriesPerPage);
+        document.getElementById("AtFinalValue").innerHTML = `Hasil Akhir nilai <math>
+                            <msub>
+                                <mi>Â</mi>
+                                <mn>t</mn>
+                            </msub>
+                        </math> = ${JSON.stringify(atData)}`;
+        document.getElementById("AtPageInfo").textContent = `Page ${AtCurrentPage} of ${totalPages}`;
+        document.getElementById("AtPrevPage").disabled = AtCurrentPage === 1;
+        document.getElementById("AtNextPage").disabled = AtCurrentPage === totalPages;
+    }
+
+    function renderLimitTwittTable() {
+        const startIndex = (limitTwittCurrentPage - 1) * limitTwittEntriesPerPage;
+        const endIndex = startIndex + limitTwittEntriesPerPage;
+        const pageData = limitTwittCurrentData.slice(startIndex, endIndex);
+        const tbody = document.querySelector("#limitTwittTable tbody");
+
+        tbody.innerHTML = pageData
+            .map(row => `
+        <tr>
+            <td>${row[0]}</td>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>${row[3]}</td>
+            <td>${row[4]}</td>
+            <td>${row[5]}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(limitTwittCurrentData.length / limitTwittEntriesPerPage);
+        document.getElementById("limitTwittPageInfo").textContent = `Page ${limitTwittCurrentPage} of ${totalPages}`;
+        document.getElementById("limitTwittPrevPage").disabled = limitTwittCurrentPage === 1;
+        document.getElementById("limitTwittNextPage").disabled = limitTwittCurrentPage === totalPages;
+    }
+
+    function renderUserTable() {
+        const startIndex = (userCurrentPage - 1) * userEntriesPerPage;
+        const endIndex = startIndex + userEntriesPerPage;
+        const pageData = userCurrentData.slice(startIndex, endIndex);
+        const mentionData = mentionsCurrentData.slice(startIndex, endIndex);
+        const tbody = document.querySelector("#userTable tbody");
+
+        tbody.innerHTML = pageData.map((values, index) => `
+        <tr>
+            <td>${mentionData[index]}</td>
+            <td>${Array.isArray(values) ? values.map(val => val.toFixed(8)).join('<br>') : values.toFixed(8)}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(userCurrentData.length / userEntriesPerPage);
+        document.getElementById("userPageInfo").textContent = `Page ${userCurrentPage} of ${totalPages}`;
+        document.getElementById("userPrevPage").disabled = userCurrentPage === 1;
+        document.getElementById("userNextPage").disabled = userCurrentPage === totalPages;
+    }
+
+
+
+    function renderMentionTable() {
+        const startIndex = (mentionCurrentPage - 1) * mentionEntriesPerPage;
+        const endIndex = startIndex + mentionEntriesPerPage;
+        const pageData = mentionCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#mentionTable tbody");
+        tbody.innerHTML = pageData
+            .map((value, index) => `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${value.toFixed(8)}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(mentionCurrentData.length / mentionEntriesPerPage);
+        document.getElementById("mentionPageInfo").textContent = `Page ${mentionCurrentPage} of ${totalPages}`;
+        document.getElementById("mentionPrevPage").disabled = mentionCurrentPage === 1;
+        document.getElementById("mentionNextPage").disabled = mentionCurrentPage === totalPages;
+    }
+    function renderSkorAnomalyTable() {
+        const startIndex = (skorAnomalyCurrentPage - 1) * skorAnomalyEntriesPerPage;
+        const endIndex = startIndex + skorAnomalyEntriesPerPage;
+        const pageData = skorAnomalyCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#skorAnomalyTable tbody");
+        tbody.innerHTML = pageData
+            .map((value, index) => `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${typeof value === 'number' ? value.toFixed(8) : value}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(skorAnomalyCurrentData.length / skorAnomalyEntriesPerPage);
+        document.getElementById("skorAnomalyPageInfo").textContent = `Page ${skorAnomalyCurrentPage} of ${totalPages}`;
+        document.getElementById("skorAnomalyPrevPage").disabled = skorAnomalyCurrentPage === 1;
+        document.getElementById("skorAnomalyNextPage").disabled = skorAnomalyCurrentPage === totalPages;
+    }
+
+    function renderHasilAgregasiTable() {
+        const startIndex = (hasilAgregasiCurrentPage - 1) * hasilAgregasiEntriesPerPage;
+        const endIndex = startIndex + hasilAgregasiEntriesPerPage;
+        const pageData = hasilAgregasiCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#hasilAgregasiTable tbody");
+        tbody.innerHTML = pageData
+            .map((row, index) => `
+            <tr>
+                <td>${row.diskrit}</td>
+                <td>${row.jumlah_mention_agregasi}</td>
+                <td>${row.s_x.toFixed(8)}</td>
+                <td>${row.waktu_awal}</td>
+                <td>${row.waktu_akhir}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(hasilAgregasiCurrentData.length / hasilAgregasiEntriesPerPage);
+        document.getElementById("hasilAgregasiPageInfo").textContent = `Page ${hasilAgregasiCurrentPage} of ${totalPages}`;
+
+        document.getElementById("hasilAgregasiPrevPage").disabled = hasilAgregasiCurrentPage === 1;
+        document.getElementById("hasilAgregasiNextPage").disabled = hasilAgregasiCurrentPage === totalPages;
+    }
+
+    function renderFirstLearn() {
+        if (!firstLearnCurrentData || !firstLearnCurrentData[0] || !Array.isArray(firstLearnCurrentData[0])) {
+            console.error('Data tidak valid untuk First Learn table');
+            return;
+        }
+
+        const startIndex = (firstLearnCurrentPage - 1) * firstLearnEntriesPerPage;
+        const endIndex = startIndex + firstLearnEntriesPerPage;
+
+        const data = firstLearnCurrentData[0];
+        const pageData = data.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#firstLearnTable tbody");
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${parseFloat(value).toFixed(8)}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(data.length / firstLearnEntriesPerPage);
+        document.getElementById("firstLearnPageInfo").textContent = `Page ${firstLearnCurrentPage} of ${totalPages}`;
+        document.getElementById("firstLearnPrevPage").disabled = firstLearnCurrentPage === 1;
+        document.getElementById("firstLearnNextPage").disabled = firstLearnCurrentPage === totalPages;
+    }
+
+    function renderfirstScoring() {
+        if (!firstScoringCurrentData || !firstScoringCurrentData[0] || !Array.isArray(firstScoringCurrentData[0])) {
+            console.error('Data tidak valid untuk First Learn table');
+            return;
+        }
+
+        const startIndex = (firstScoringCurrentPage - 1) * firstScoringEntriesPerPage;
+        const endIndex = startIndex + firstScoringEntriesPerPage;
+
+        const data = firstScoringCurrentData[0];
+        const pageData = data.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#firstScoringTable tbody");
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${parseFloat(value).toFixed(8)}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(data.length / firstScoringEntriesPerPage);
+        document.getElementById("firstScoringPageInfo").textContent = `Page ${firstScoringCurrentPage} of ${totalPages}`;
+        document.getElementById("firstScoringPrevPage").disabled = firstScoringCurrentPage === 1;
+        document.getElementById("firstScoringNextPage").disabled = firstScoringCurrentPage === totalPages;
+    }
+
+    function renderFirstSmoothing() {
+        const startIndex = (firstSmoothingCurrentPage - 1) * firstSmoothingEntriesPerPage;
+        const endIndex = startIndex + firstSmoothingEntriesPerPage;
+        const pageData = firstSmoothingCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#firstSmoothingTable tbody");
+        tbody.innerHTML = pageData
+            .map((value, index) => `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${value.toFixed(8)}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(firstSmoothingCurrentData.length / firstSmoothingEntriesPerPage);
+        document.getElementById("firstSmoothingPageInfo").textContent = `Page ${firstSmoothingCurrentPage} of ${totalPages}`;
+        document.getElementById("firstSmoothingPrevPage").disabled = firstSmoothingCurrentPage === 1;
+        document.getElementById("firstSmoothingNextPage").disabled = firstSmoothingCurrentPage === totalPages;
+    }
+
+    function rendersecondLearn() {
+        if (!secondLearnCurrentData || !secondLearnCurrentData[0] || !Array.isArray(secondLearnCurrentData[0])) {
+            console.error('Data tidak valid untuk First Learn table');
+            return;
+        }
+
+        const startIndex = (secondLearnCurrentPage - 1) * secondLearnEntriesPerPage;
+        const endIndex = startIndex + secondLearnEntriesPerPage;
+
+        const data = secondLearnCurrentData[0];
+        const pageData = data.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#secondLearnTable tbody");
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${parseFloat(value).toFixed(8)}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(data.length / secondLearnEntriesPerPage);
+        document.getElementById("secondLearnPageInfo").textContent = `Page ${secondLearnCurrentPage} of ${totalPages}`;
+        document.getElementById("secondLearnPrevPage").disabled = secondLearnCurrentPage === 1;
+        document.getElementById("secondLearnNextPage").disabled = secondLearnCurrentPage === totalPages;
+    }
+
+    function rendersecondScoring() {
+
+        const startIndex = (secondScoringCurrentPage - 1) * secondScoringEntriesPerPage;
+        const endIndex = startIndex + secondScoringEntriesPerPage;
+
+        const data = secondScoringCurrentData[0];
+        const Smoothing = secondSmoothingCurrentData[0];
+        const pageData = data.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#secondScoringTable tbody");
+        tbody.innerHTML = pageData.map((value, index) => `
+        <tr>
+            <td>${startIndex + index + 1}</td>
+            <td>${parseFloat(value).toFixed(8)}</td>
+        </tr>
+    `).join('');
+
+        const totalPages = Math.ceil(data.length / secondScoringEntriesPerPage);
+        document.getElementById("secondScoringPageInfo").textContent = `Page ${secondScoringCurrentPage} of ${totalPages}`;
+        document.getElementById("secondScoringPrevPage").disabled = secondScoringCurrentPage === 1;
+        document.getElementById("secondScoringNextPage").disabled = secondScoringCurrentPage === totalPages;
+    }
+
+    function rendersecondSmoothing() {
+        const startIndex = (secondSmoothingCurrentPage - 1) * secondSmoothingEntriesPerPage;
+        const endIndex = startIndex + secondSmoothingEntriesPerPage;
+        const pageData = secondSmoothingCurrentData.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#secondSmoothingTable tbody");
+        tbody.innerHTML = pageData
+            .map((value, index) => `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${value.toFixed(8)}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(secondSmoothingCurrentData.length / secondSmoothingEntriesPerPage);
+        document.getElementById("secondSmoothingPageInfo").textContent = `Page ${secondSmoothingCurrentPage} of ${totalPages}`;
+        document.getElementById("secondSmoothingPrevPage").disabled = secondSmoothingCurrentPage === 1;
+        document.getElementById("secondSmoothingNextPage").disabled = secondSmoothingCurrentPage === totalPages;
+    }
+    function renderbins() {
+        const startIndex = (binsCurrentPage - 1) * binsEntriesPerPage;
+        const endIndex = startIndex + binsEntriesPerPage;
+        const data = binsCurrentData[0];
+        const pageData = data.slice(startIndex, endIndex);
+
+        const tbody = document.querySelector("#binsTable tbody");
+        tbody.innerHTML = pageData
+            .map((value, index) => `
+            <tr>
+                <td>${startIndex + index + 1}</td>
+                <td>${value.toFixed(8)}</td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(binsCurrentData.length / binsEntriesPerPage);
+        document.getElementById("binsPageInfo").textContent = `Page ${binsCurrentPage} of ${totalPages}`;
+        document.getElementById("binsPrevPage").disabled = binsCurrentPage === 1;
+        document.getElementById("binsNextPage").disabled = binsCurrentPage === totalPages;
+    }
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

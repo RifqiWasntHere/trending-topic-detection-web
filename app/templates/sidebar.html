@@ -1,0 +1,87 @@
+<!-- Sidebar -->
+<ul
+  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+  id="accordionSidebar">
+  <!-- Sidebar - Brand -->
+  <a
+    class="sidebar-brand d-flex align-items-center justify-content-center"
+    href="">
+    <div class="sidebar-brand-text">Deteksi Trending Topik</div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.home_route') }}">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>Dashboard</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Scraping / Import Data -->
+  <li class="nav-item {% if request.path == '/import' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.page_import_data') }}">
+      <i class="fas fa-fw fa-magnifying-glass"></i>
+      <span>Import Data</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Scraping / Preprocessing -->
+  <li
+    class="nav-item {% if request.path == '/anomaly/preprocessing' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.preprocessing_route') }}">
+      <i class="fas fa-fw fa-scissors"></i>
+      <span>preprocessing</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Link Anomaly -->
+  <li
+    class="nav-item {% if request.path == '/run_link_anomaly' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.link_anomaly_route') }}">
+      <i class="fas fa-fw fa-circle-nodes"></i>
+      <span>Link Anomaly</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Modelling Topik -->
+  <li
+    class="nav-item {% if request.path == '/topic_modeling' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.topic_modeling_route') }}">
+      <i class="fas fa-fwd fa-puzzle-piece"></i>
+      <span>Topic Modeling</span></a
+    >
+  </li>
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Nav Item - Modelling Topik -->
+  <li class="nav-item {% if request.path == '/pengujian' %}active{% endif %}">
+    <a class="nav-link" href="{{ url_for('routes.pengujian_route') }}">
+      <i class="fas fa-clipboard-check"></i>
+      <span>Pengujian</span></a
+    >
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0" />
+
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+</ul>
+<!-- End of Sidebar -->

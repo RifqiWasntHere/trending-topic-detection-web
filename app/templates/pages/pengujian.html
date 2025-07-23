@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Pengujian Model LDA</h1>
+    </div>
+
+    <!-- Tabs untuk periode diskrit -->
+    <ul class="nav nav-tabs mb-4" id="periodTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="period-18-19-20-tab" data-toggle="tab" href="#period-18-19-20" role="tab">
+                Diskrit 18 19 20
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="period-22-23-24-tab" data-toggle="tab" href="#period-22-23-24" role="tab">
+                Diskrit 22 23 24
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="periodTabContent">
+        <!-- Period 18 19 20 -->
+        <div class="tab-pane fade show active" id="period-18-19-20" role="tabpanel">
+            <!-- Ground Truth -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ground Truth (Diskrit 18 19 20)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Keyword Ground Truth</th>
+                                    <th>Sumber</th>
+                                    <th>Tanggal</th>
+                                    <th>Contoh Tweet</th>
+                                    <th>Hasil Trending Topik Model</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data.diskrit_18_19_20.ground_truth %}
+                                <tr>
+                                    <td>{{ item.title }}</td>
+                                    <td><a href="{{ item.source }}" target="_blank">{{ item.source|truncate(60) }}</a>
+                                    </td>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.tweet }}</td>
+                                    <td>{{ item.trending_topics }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Metrics (Diskrit 18 19 20)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Topic Recall
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_18_19_20.metrics.topic_recall.value|round(3) * 100 }}%
+        
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Keyword Precision
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_18_19_20.metrics.keyword_precision.value|round(3) * 100 }}%
+                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Keyword Recall
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_18_19_20.metrics.keyword_recall.value|round(3) * 100 }}%
+                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Period 22 23 24 (similar structure) -->
+        <div class="tab-pane fade" id="period-22-23-24" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ground Truth (Diskrit 22 23 24)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Keyword Ground Truth</th>
+                                    <th>Sumber</th>
+                                    <th>Tanggal</th>
+                                    <th>Contoh Tweet</th>
+                                    <th>Hasil Trending Topik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data.diskrit_22_23_24.ground_truth %}
+                                <tr>
+                                    <td>{{ item.title }}</td>
+                                    <td><a href="{{ item.source }}" target="_blank">{{ item.source|truncate(60) }}</a>
+                                    </td>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.tweet }}</td>
+                                    <td>{{ item.trending_topics }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="card shadow mb-4">
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Topic Recall
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_22_23_24.metrics.topic_recall.value|round(3) * 100 }}%
+                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Keyword Precision
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_22_23_24.metrics.keyword_precision.value|round(3) * 100 }}%
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Keyword Recall
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ data.diskrit_22_23_24.metrics.keyword_recall.value|round(3) * 100 }}%
+                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Similar cards for Keyword Precision and Recall -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

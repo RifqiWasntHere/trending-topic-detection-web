@@ -1,0 +1,327 @@
+{% extends "base.html" %} {% block content %}
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Prepcrocessing Data</h1>
+  </div>
+  <div class="card shadow mb-4" id="hasilCard">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">
+        Data Hasil Prepcrocessing
+      </h6>
+    </div>
+
+    <div class="card-body">
+      <button class="btn btn-primary mb-3" id="startPreprocessing">
+        Mulai Preprocessing
+      </button>
+      <button class="btn btn-danger mb-3" id="startDeletion">Hapus Data</button>
+
+      <div
+        class="modal fade"
+        id="preprocessingModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="preprocessingModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="preprocessingModalLabel">
+                Proses Preprocessing
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="deleteModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">
+                Konfirmasi Penghapusan
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              + Apakah Anda yakin ingin menghapus semua data preprocessing?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">
+                Batal
+              </button>
+              <button type="button" class="btn btn-danger" id="confirmDelete">
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="dataStats" class="mb-3">
+        <p>Total Data: <span id="totalData">0</span></p>
+      </div>
+      <div>
+        <table
+          class="table table-hover"
+          id="dataTable"
+          style="table-layout: fixed; color: black">
+          <thead>
+            <tr>
+              <th style="width: 7%">id</th>
+              <th style="width: 15%">time</th>
+              <th style="width: 15%">username</th>
+              <th>tweet</th>
+              <th style="width: 10%">jumlah mention</th>
+              <th style="width: 20%">id user mentioned</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pagination-controls">
+  <button id="firstPage" class="btn btn-secondary">First</button>
+  <button id="prevPage" class="btn btn-secondary">Previous</button>
+  <span id="pageInfo">Page 1</span>
+  <button id="nextPage" class="btn btn-secondary">Next</button>
+  <button id="lastPage" class="btn btn-secondary">Last</button>
+</div>
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let currentPage = 1
+    const perPage = 10
+
+    function fetchData(page) {
+      fetch(`/api/preprocessing?page=${page}&per_page=${perPage}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return response.json()
+        })
+        .then((data) => {
+          document.getElementById('totalData').textContent = data.total_count
+
+          const dataTable = document
+            .getElementById('dataTable')
+            .getElementsByTagName('tbody')[0]
+          dataTable.innerHTML = ''
+
+          data.data.forEach((row) => {
+            const newRow = dataTable.insertRow()
+
+            newRow.insertCell(0).textContent = row.id
+            newRow.insertCell(1).textContent = row.created_at
+            newRow.insertCell(2).textContent = row.username
+            newRow.insertCell(3).textContent = row.processed_text // Changed to processed_text
+            newRow.insertCell(4).textContent = row.jumlah_mention
+            newRow.insertCell(5).textContent = row.mentions
+          })
+
+          currentPage = data.page
+          document.getElementById(
+            'pageInfo'
+          ).textContent = `Page ${currentPage} of ${data.total_pages}`
+
+          document.getElementById('firstPage').disabled = currentPage === 1
+          document.getElementById('prevPage').disabled = currentPage === 1
+          document.getElementById('nextPage').disabled =
+            currentPage === data.total_pages
+          document.getElementById('lastPage').disabled =
+            currentPage === data.total_pages
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error)
+          Swal.fire({
+            title: 'Error!',
+            text: 'Failed to fetch data: ' + error.message,
+            icon: 'error',
+          })
+        })
+    }
+
+    function handleDeletion() {
+      Swal.fire({
+        title: 'Konfirmasi Penghapusan',
+        text: 'Apakah Anda yakin ingin menghapus semua data?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch("{{ url_for('routes.deleted_preprocessing_data') }}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                return response.text().then((text) => {
+                  try {
+                    return JSON.parse(text)
+                  } catch (e) {
+                    throw new Error('Server error: ' + text)
+                  }
+                })
+              }
+              return response.json()
+            })
+            .then((data) => {
+              if (data.error) {
+                throw new Error(data.error)
+              }
+              Swal.fire('Terhapus!', 'Semua data telah dihapus.', 'success')
+              fetchData(1)
+            })
+            .catch((error) => {
+              console.error('Delete error:', error)
+              Swal.fire(
+                'Gagal!',
+                'Gagal menghapus data: ' + error.message,
+                'error'
+              )
+            })
+        }
+      })
+    }
+
+    document
+      .getElementById('startDeletion')
+      .addEventListener('click', handleDeletion)
+
+    document
+      .getElementById('firstPage')
+      .addEventListener('click', () => fetchData(1))
+    document
+      .getElementById('prevPage')
+      .addEventListener('click', () => fetchData(currentPage - 1))
+    document
+      .getElementById('nextPage')
+      .addEventListener('click', () => fetchData(currentPage + 1))
+    document.getElementById('lastPage').addEventListener('click', () => {
+      fetch(`/api/preprocessing?per_page=${perPage}`)
+        .then((response) => response.json())
+        .then((data) => fetchData(data.total_pages))
+        .catch((error) => console.error('Error fetching total pages:', error))
+    })
+
+    fetchData(currentPage)
+
+    var socket = io()
+
+    socket.on('progress_cleansing_stemming', function (data) {
+      var progress = Math.round((data.current / data.total) * 100)
+      document.getElementById('progressBarCleansingStemming').style.width =
+        progress + '%'
+      document.getElementById(
+        'progressText'
+      ).innerHTML = `Cleansing & Stemming Progress: <b style="color: green;">${progress}%</b><br>Data yang diproses: ${data.current} dari ${data.total}<br>ETA: ${data.eta}`
+    })
+
+    socket.on('progress_complete', function () {
+      Swal.fire({
+        title: 'Selesai!',
+        text: 'Preprocessing telah berhasil dilakukan.',
+        confirmButtonText: 'Lihat Hasil',
+        icon: 'success',
+      }).then(() => fetchData(1))
+    })
+
+    socket.on('progress_error', function () {
+      Swal.fire({
+        title: 'Gagal!',
+        text: 'Gagal melakukan preprocessing.',
+        icon: 'error',
+      })
+    })
+
+    document
+      .getElementById('startPreprocessing')
+      .addEventListener('click', function () {
+        $.ajax({
+          url: "{{ url_for('routes.checking_data_preprocessed') }}",
+          type: 'GET',
+          success: function (response) {
+            if (response.exists) {
+              Swal.fire({
+                title: 'Peringatan!',
+                text: 'Data sudah ada di tabel preprocessing. Harap bersihkan data sebelum menjalankan preprocessing lagi.',
+                icon: 'warning',
+                confirmButtonText: 'Oke',
+              })
+            } else {
+              Swal.fire({
+                title: 'Mulai Preprocessing',
+                text: "Tekan 'Mulai' untuk memulai preprocessing",
+                html: `<div id="progressBarContainerCleansingStemming" style="width: 100%; background-color: #ddd;">
+                                    <div id="progressBarCleansingStemming" style="width: 0%; height: 20px; background-color: #4CAF50;"></div></div>
+                            <p id="progressText">Cleansing & Stemming Progress: <b style="color: green;">0%</b><br>
+                                    Data yang diproses: 0 dari --<br>
+                                    ETA: --:--:--</p>`,
+                icon: 'info',
+                showCancelButton: false,
+                showDenyButton: true,
+                denyButtonText: 'Batal',
+                confirmButtonText: 'Mulai',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                  return new Promise((resolve, reject) => {
+                    $.ajax({
+                      url: "{{ url_for('routes.run_preprocessing_route') }}",
+                      type: 'POST',
+                      success: resolve,
+                      error: reject,
+                    })
+                  })
+                },
+              })
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error('Error saat memeriksa keberadaan data: ' + error)
+          },
+        })
+      })
+  })
+</script>
+
+{% endblock %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+{% endblock %}
