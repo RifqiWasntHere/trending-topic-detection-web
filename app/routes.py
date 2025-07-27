@@ -2,6 +2,7 @@ import math
 from flask_socketio import emit
 import time
 from flask import Blueprint, render_template, request, jsonify
+import numpy as np
 from app.utils.socketio import socketio
 import pandas as pd
 import os
@@ -81,8 +82,7 @@ def api_data():
     total_pages = max(1, math.ceil(total_count / per_page))
     start = (page-1) * per_page
     finish = start + per_page
-    # Pastikan column-name yang benar
-    # Mapping data frontend:{conversation_id_str, username, created_at, full_text}
+
     rows = []
     for _, row in df.iloc[start:finish].iterrows():
         rows.append({
@@ -150,6 +150,9 @@ def run_preprocessing_route():
 
         result_df = pd.DataFrame(processed_rows)
         result_df['id'] = result_df['tweet_id_str']
+        result_df = result_df.sort_values('created_at')
+        result_df = result_df.reset_index(drop=True)
+        result_df = result_df[result_df['jumlah_mention'] > 0]
         result_df.to_csv('tmp/preprocessed.csv', index=False)
 
         socketio.emit("progress_complete")  # Notifikasi selesai
@@ -174,7 +177,7 @@ def api_preprocessing():
             "page": 1,
             "total_pages": 1
         })
-
+    df = df.replace({np.nan: None})
     total_count = len(df)
     total_pages = max(1, math.ceil(total_count / per_page))
     start = (page-1)*per_page

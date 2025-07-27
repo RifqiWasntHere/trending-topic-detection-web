@@ -88,12 +88,11 @@
           style="table-layout: fixed; color: black">
           <thead>
             <tr>
-              <th style="width: 7%">id</th>
-              <th style="width: 15%">time</th>
-              <th style="width: 15%">username</th>
-              <th>tweet</th>
-              <th style="width: 10%">jumlah mention</th>
-              <th style="width: 20%">id user mentioned</th>
+              <th style="width: 5%">Tweet ID</th>
+              <th style="width: 10%">Time Posted</th>
+              <th style="width: 20%">Tweet Content</th>
+              <th style="width: 5%">Mentions Count</th>
+              <th style="width: 10%">Mentions</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -116,6 +115,15 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+  function formatTSIntl(ts) {
+    const d = new Date(ts)
+    return new Intl.DateTimeFormat('id-ID', {
+      dateStyle: 'full',
+      timeStyle: 'medium',
+      timeZone: 'Asia/Jakarta',
+    }).format(d)
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1
     const perPage = 10
@@ -140,7 +148,7 @@
             const newRow = dataTable.insertRow()
 
             newRow.insertCell(0).textContent = row.id
-            newRow.insertCell(1).textContent = row.created_at
+            newRow.insertCell(1).textContent = formatTSIntl(row.created_at)
             newRow.insertCell(2).textContent = row.processed_text
             newRow.insertCell(3).textContent = row.jumlah_mention
             newRow.insertCell(4).textContent = row.mentions

@@ -103,11 +103,10 @@ def stemming(text, stemmer):
 #     return mentions, jumlah_mention
 def mentions_info(text):
     if not text:
-        return None, 0
+        return '', 0
     mention_list = re.findall(r'@\w+', text)
-    mentions = ','.join(mention_list) if mention_list else None
-    jumlah_mention = len(mention_list)
-    return mentions, jumlah_mention
+    mentions = ','.join(mention_list) if mention_list else ''
+    return mentions, len(mention_list)
 
 # Tokenisasi
 def tokenize(text):
@@ -129,7 +128,6 @@ def preprocess_row(row, slangwords_dict, stopwords, stemmer):
         'tweet_id_str': row['id_str'],
         'created_at': created_at_jkt,
         'processed_text': text,
-        'token': token,
         'mentions': mentions,
         'jumlah_mention': jumlah_mention
     })
